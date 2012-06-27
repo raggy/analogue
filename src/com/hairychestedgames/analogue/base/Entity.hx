@@ -75,4 +75,26 @@ class Entity implements IEntity
 		nodes = null;
 	}
 
+	/**
+	 * Create an entity with a list of components
+	 */
+	public static function with(components:Array<Dynamic>):Entity
+	{
+		var entity:Entity = new Entity();
+
+		for (component in components)
+		{
+			if (Std.is(component, Class))
+			{
+				entity.add(Type.createInstance(component, []));
+			}
+			else
+			{
+				entity.add(component);
+			}
+		}
+
+		return entity;
+	}
+
 }
