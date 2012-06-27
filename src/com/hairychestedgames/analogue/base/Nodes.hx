@@ -156,7 +156,7 @@ class Nodes implements INodes
 	
 	private function describe(type:Class<INode>):Description
 	{
-		var infos = new haxe.rtti.XmlParser().processElement(Xml.parse(untyped type.__rtti).firstElement());
+		var infos = new haxe.rtti.XmlParser().processElement(Xml.parse(Reflect.field(type, "__rtti")).firstElement());
 		var classDef:Classdef = Type.enumParameters(infos)[0];
 		
 		// Build hash of field name -> field type name
