@@ -24,11 +24,13 @@ class Models implements IModels
 		return models.get(typeName);
 	}
 	
-	public function set<T>(type:Class<T>, instance:T):Void
+	public function set<T>(type:Class<T>, instance:T):T
 	{
 		var typeName:String = Type.getClassName(type);
 		
 		models.set(typeName, instance);
+
+		return instance;
 	}
 	
 	public function iterator():Iterator<Dynamic>
