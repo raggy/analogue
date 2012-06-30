@@ -40,9 +40,9 @@ class StateMachine<T> implements haxe.rtti.Generic
 		return state;
 	}
 	
-	public function unbind(state:T, stage:StateStage, listener:Void->Void):Void
+	public function unbind(state:T, listener:Void->Void):Void
 	{
-		var list:List < Void->Void > = getStateListeners(state, stage);
+		var list:List < Void->Void > = getStateListeners(state);
 		
 		list.remove(listener);
 	}
@@ -57,7 +57,7 @@ class StateMachine<T> implements haxe.rtti.Generic
 		}
 		else
 		{
-			states.set(new List<Void->Void>());
+			states.set(key, new List<Void->Void>());
 		}
 	}
 	
