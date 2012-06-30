@@ -5,7 +5,7 @@ interface IEntities
 {
 	var added(default, null):Signaler<IEntity>;
 	var removed(default, null):Signaler<IEntity>;
-	function add(entity:IEntity):Void;
-	function remove(entity:IEntity):Void;
+	function add(entity:IEntity):IEntity;
+	function remove(entity:IEntity):IEntity;
 	function iterator():Iterator<IEntity>;
 }

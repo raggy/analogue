@@ -18,18 +18,22 @@ class Entities implements IEntities
 		removed = new DirectSignaler(this);
 	}
 	
-	public function add(entity:IEntity):Void
+	public function add(entity:IEntity):IEntity
 	{
 		all.add(entity);
 		
 		added.dispatch(entity);
+		
+		return entity;
 	}
 	
-	public function remove(entity:IEntity):Void
+	public function remove(entity:IEntity):IEntity
 	{
 		removed.dispatch(entity);
 		
 		all.remove(entity);
+		
+		return entity;
 	}
 	
 	public function iterator():Iterator<IEntity>

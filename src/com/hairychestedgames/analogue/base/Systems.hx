@@ -24,7 +24,7 @@ class Systems implements ISystems
 	/**
 	 * Create a new system
 	 */
-	public function create(type:Class<ISystem>):Void
+	public function create(type:Class<ISystem>):ISystem
 	{
 		var typeName:String = Type.getClassName(type);
 		
@@ -35,12 +35,15 @@ class Systems implements ISystems
 		else
 		{
 			var system:ISystem = Type.createInstance(type, []);
+			
 			systems.set(typeName, system);
 			created.dispatch(system);
+			
+			return system;
 		}
 	}
 	
-	public function get<T>(type:Class<T>):T
+	public function get<T:ISystem>(type:Class<T>):T
 	{
 		var typeName:String = Type.getClassName(type);
 	
@@ -57,7 +60,7 @@ class Systems implements ISystems
 	/**
 	 * Remove a system
 	 */
-	public function remove(type:Class<ISystem>):Void
+	public function remove(type:Class<ISystem>):ISystem
 	{
 		var typeName:String = Type.getClassName(type);
 		
@@ -67,6 +70,8 @@ class Systems implements ISystems
 			
 			systems.remove(typeName);
 			removed.dispatch(system);
+			
+			return system;
 		}
 		else
 		{
