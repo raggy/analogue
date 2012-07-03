@@ -23,6 +23,7 @@ class Game implements IGame
 		systems = new Systems();
 		
 		entities.added.bind(onEntityAdded);
+		entities.changed.bind(onEntityChanged);
 		entities.removed.bind(onEntityRemoved);
 		
 		systems.created.bind(onSystemCreated);
@@ -31,6 +32,12 @@ class Game implements IGame
 	
 	private function onEntityAdded(entity:IEntity):Void
 	{
+		nodes.create(entity);
+	}
+	
+	private function onEntityChanged(entity:IEntity):Void 
+	{
+		nodes.clean(entity);
 		nodes.create(entity);
 	}
 	
