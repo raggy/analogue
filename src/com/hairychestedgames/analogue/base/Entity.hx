@@ -52,7 +52,7 @@ class Entity implements IEntity
 	 * Remove a component from this Entity
 	 * @param	type
 	 */
-	public function remove<T:(Class<Dynamic>, Enum<Dynamic>)>(type:T):Void 
+	public function remove(type:Dynamic):Void 
 	{
 		var typeName:String = Type.getClassName(type);
 		if (components.exists(typeName))

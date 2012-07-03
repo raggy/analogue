@@ -16,7 +16,7 @@ interface IEntity
 	 * Remove a component from this Entity
 	 * @param	type
 	 */
-	function remove<T:(Class<Dynamic>, Enum<Dynamic>)>(type:T):Void; 
+	function remove(type:Dynamic):Void; 
 	/**
 	 * Remove all components and nodes
 	 */
