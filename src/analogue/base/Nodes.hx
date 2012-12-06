@@ -3,6 +3,8 @@ import analogue.core.INode;
 import analogue.core.IEntity;
 import analogue.core.INodes;
 import haxe.rtti.CType;
+import haxe.rtti.Meta;
+import haxe.rtti.XmlParser;
 	
 /**
  * Nodes manager
@@ -32,40 +34,16 @@ class Nodes implements INodes
 	}
 
 	/**
-	 *  Get list of nodes
+	 * Get list of nodes
 	 **/
 	public function get<T>(type:Class<T>):List<T>
 	{
 		var typeName:String = Type.getClassName(type);
-		if (nodes.exists(typeName))
+		if (!nodes.exists(typeName))
 		{
-			return cast nodes.get(typeName);
+			register(type);
 		}
-		else
-		{
-			throw "Node type not registered: " + typeName;
-		}
-	}
-	
-	public function register<T>(type:T):Void
-	{
-		var typeName:String = Type.getClassName(cast type);
-		if (nodes.exists(typeName))
-		{
-			throw "Node type already registered: " + typeName;
-		}
-		else
-		{
-			descriptions.set(typeName, describe(cast type));
-			nodes.set(typeName, cast new List<T>());
-		}
-	}
-		
-	public function deregister<T>(type:T):Void
-	{
-		var typeName:String = Type.getClassName(cast type);
-		descriptions.remove(typeName);
-		nodes.remove(typeName);
+		return cast nodes.get(typeName);
 	}
 		
 	/**
@@ -95,8 +73,8 @@ class Nodes implements INodes
 				// Import components
 				for (fieldName in description.components.keys())
 				{
-					var componentTypeName = description.components.get(fieldName);
-					var component = entity.components.get(componentTypeName);
+					var componentDescription = description.components.get(fieldName);
+					var component = entity.components.get(componentDescription.typeName);
 					Reflect.setField(node, fieldName, component);
 				}
 			}
@@ -130,8 +108,8 @@ class Nodes implements INodes
 					// Import components
 					for (fieldName in description.components.keys())
 					{
-						var componentTypeName = description.components.get(fieldName);
-						var component = entity.components.get(componentTypeName);
+						var componentDescription = description.components.get(fieldName);
+						var component = entity.components.get(componentDescription.typeName);
 						Reflect.setField(node, fieldName, component);
 					}
 				}
@@ -158,9 +136,10 @@ class Nodes implements INodes
 	{
 		var infos = new haxe.rtti.XmlParser().processElement(Xml.parse(Reflect.field(type, "__rtti")).firstElement());
 		var classDef:Classdef = Type.enumParameters(infos)[0];
+		var fieldsMeta = Meta.getFields(type);
 		
 		// Build hash of field name -> field type name
-		var components:Hash<String> = new Hash<String>();
+		var components:Hash<ComponentDescription> = new Hash<ComponentDescription>();
 		for (fieldDescription in classDef.fields)
 		{
 			var fieldConstructorType = Type.enumConstructor(fieldDescription.type);
@@ -169,21 +148,50 @@ class Nodes implements INodes
 			{
 				var fieldName = fieldDescription.name;
 				var fieldTypeName = Type.enumParameters(fieldDescription.type)[0];
+				var fieldOptional = false;
 				
-				components.set(fieldName, fieldTypeName);
+				var fieldMeta = Reflect.field(fieldsMeta, fieldName);
+				if (fieldMeta != null)
+				{
+					fieldOptional = Reflect.hasField(fieldMeta, "optional");
+				}
+				
+				components.set(fieldName, { typeName: fieldTypeName, optional: fieldOptional } );
 			}
 		}
 		
 		return { type: cast type, typeName: Type.getClassName(cast type), components: components };
 	}
 	
+	private function register<T>(type:T):Void
+	{
+		var typeName:String = Type.getClassName(cast type);
+		if (nodes.exists(typeName))
+		{
+			throw "Node type already registered: " + typeName;
+		}
+		else
+		{
+			descriptions.set(typeName, describe(cast type));
+			nodes.set(typeName, cast new List<T>());
+		}
+	}
+		
+	private function deregister<T>(type:T):Void
+	{
+		var typeName:String = Type.getClassName(cast type);
+		descriptions.remove(typeName);
+		nodes.remove(typeName);
+	}
+	
 	private function satisfies(entity:IEntity, description:Description):Bool
 	{
-		for (componentTypeName in description.components)
+		for (componentDescription in description.components)
 		{
 			// If a component isn't found
-			if (!entity.components.exists(componentTypeName))
+			if (!(componentDescription.optional || entity.components.exists(componentDescription.typeName)))
 			{
+				trace("Component not found: " + componentDescription.typeName);
 				return false;
 			}
 		}
@@ -196,7 +204,13 @@ class Nodes implements INodes
 
 typedef Description =
 {
-	var components:Hash<String>;
+	var components:Hash<ComponentDescription>;
 	var type:Class<INode>;
+	var typeName:String;
+}
+
+typedef ComponentDescription =
+{
+	var optional:Bool;
 	var typeName:String;
 }
