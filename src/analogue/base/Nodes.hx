@@ -36,7 +36,7 @@ class Nodes implements INodes
 	/**
 	 * Get list of nodes
 	 **/
-	public function get<T>(type:Class<T>):List<T>
+	public function get<T:INode>(type:Class<T>):List<T>
 	{
 		var typeName:String = Type.getClassName(type);
 		if (!nodes.exists(typeName))
@@ -191,7 +191,6 @@ class Nodes implements INodes
 			// If a component isn't found
 			if (!(componentDescription.optional || entity.components.exists(componentDescription.typeName)))
 			{
-				trace("Component not found: " + componentDescription.typeName);
 				return false;
 			}
 		}
