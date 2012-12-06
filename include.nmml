@@ -3,4 +3,6 @@
 
 	<source path="src" />
 	
+	<haxelib name="hsl-1" />
+	
 </project>
