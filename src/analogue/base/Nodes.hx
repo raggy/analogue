@@ -1,7 +1,7 @@
-package com.hairychestedgames.analogue.base;
-import com.hairychestedgames.analogue.core.INode;
-import com.hairychestedgames.analogue.core.IEntity;
-import com.hairychestedgames.analogue.core.INodes;
+package analogue.base;
+import analogue.core.INode;
+import analogue.core.IEntity;
+import analogue.core.INodes;
 import haxe.rtti.CType;
 	
 /**

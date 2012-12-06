@@ -1,5 +1,5 @@
-package com.hairychestedgames.analogue.base;
-import com.hairychestedgames.analogue.core.IModels;
+package analogue.base;
+import analogue.core.IModels;
 import hsl.haxe.DirectSignaler;
 import hsl.haxe.Signaler;
 

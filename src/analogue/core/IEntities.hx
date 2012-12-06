@@ -1,4 +1,4 @@
-package com.hairychestedgames.analogue.core;
+package analogue.core;
 import hsl.haxe.Signaler;
 
 interface IEntities

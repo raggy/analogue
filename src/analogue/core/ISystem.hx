@@ -1,4 +1,4 @@
-package com.hairychestedgames.analogue.core;
+package analogue.core;
 
 interface ISystem
 {

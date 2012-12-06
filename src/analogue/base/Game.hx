@@ -1,12 +1,12 @@
-package com.hairychestedgames.analogue.base;
-import com.hairychestedgames.analogue.base.Models;
-import com.hairychestedgames.analogue.core.IEntities;
-import com.hairychestedgames.analogue.core.IEntity;
-import com.hairychestedgames.analogue.core.IGame;
-import com.hairychestedgames.analogue.core.IModels;
-import com.hairychestedgames.analogue.core.INodes;
-import com.hairychestedgames.analogue.core.ISystem;
-import com.hairychestedgames.analogue.core.ISystems;
+package analogue.base;
+import analogue.base.Models;
+import analogue.core.IEntities;
+import analogue.core.IEntity;
+import analogue.core.IGame;
+import analogue.core.IModels;
+import analogue.core.INodes;
+import analogue.core.ISystem;
+import analogue.core.ISystems;
 
 class Game implements IGame
 {

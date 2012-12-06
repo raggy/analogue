@@ -1,6 +1,6 @@
-package com.hairychestedgames.analogue.base;
-import com.hairychestedgames.analogue.core.IGame;
-import com.hairychestedgames.analogue.core.ISystem;
+package analogue.base;
+import analogue.core.IGame;
+import analogue.core.ISystem;
 
 class System implements ISystem
 {

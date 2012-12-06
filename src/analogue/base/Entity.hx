@@ -1,6 +1,6 @@
-package com.hairychestedgames.analogue.base;
-import com.hairychestedgames.analogue.core.IEntity;
-import com.hairychestedgames.analogue.core.INode;
+package analogue.base;
+import analogue.core.IEntity;
+import analogue.core.INode;
 import hsl.haxe.DirectSignaler;
 import hsl.haxe.Signaler;
 

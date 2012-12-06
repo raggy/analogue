@@ -1,4 +1,4 @@
-package com.hairychestedgames.analogue.utils;
+package analogue.utils;
 
 /**
  * Simple state machine
