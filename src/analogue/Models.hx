@@ -1,9 +1,8 @@
-package analogue.base;
-import analogue.core.IModels;
+package analogue;
 import hsl.haxe.DirectSignaler;
 import hsl.haxe.Signaler;
 
-class Models implements IModels
+class Models 
 {
 	private var models:Hash<Dynamic>;
 	

@@ -1,6 +1,4 @@
-package analogue.base;
-import analogue.core.ISystem;
-import analogue.core.ISystems;
+package analogue;
 import hsl.haxe.DirectSignaler;
 import hsl.haxe.Signaler;
 	
@@ -8,15 +6,15 @@ import hsl.haxe.Signaler;
 * Systems manager
 * @author Benjamin Davis
 */
-class Systems implements ISystems
+class Systems 
 {
-	private var systems:Hash<ISystem>;
-	public var created(default, null):Signaler<ISystem>;
-	public var removed(default, null):Signaler<ISystem>;
+	private var systems:Hash<System>;
+	public var created(default, null):Signaler<System>;
+	public var removed(default, null):Signaler<System>;
 	
 	public function new() 
 	{
-		systems = new Hash<ISystem>();
+		systems = new Hash<System>();
 		created = new DirectSignaler(this);
 		removed = new DirectSignaler(this);
 	}
@@ -24,7 +22,7 @@ class Systems implements ISystems
 	/**
 	 * Create a new system
 	 */
-	public function create(type:Class<ISystem>):ISystem
+	public function create(type:Class<System>):System
 	{
 		var typeName:String = Type.getClassName(type);
 		
@@ -34,7 +32,7 @@ class Systems implements ISystems
 		}
 		else
 		{
-			var system:ISystem = Type.createInstance(type, []);
+			var system:System = Type.createInstance(type, []);
 			
 			systems.set(typeName, system);
 			created.dispatch(system);
@@ -43,7 +41,7 @@ class Systems implements ISystems
 		}
 	}
 	
-	public function get<T:ISystem>(type:Class<T>):T
+	public function get<T:System>(type:Class<T>):T
 	{
 		var typeName:String = Type.getClassName(type);
 	
@@ -60,13 +58,13 @@ class Systems implements ISystems
 	/**
 	 * Remove a system
 	 */
-	public function remove(type:Class<ISystem>):ISystem
+	public function remove(type:Class<System>):System
 	{
 		var typeName:String = Type.getClassName(type);
 		
 		if (systems.exists(typeName))
 		{
-			var system:ISystem = systems.get(typeName);
+			var system:System = systems.get(typeName);
 			
 			systems.remove(typeName);
 			removed.dispatch(system);

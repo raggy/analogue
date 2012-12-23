@@ -4,5 +4,6 @@
 	<source path="src" />
 	
 	<haxelib name="hsl-1" />
+	<haxelib name="polygonal-ds" />
 	
 </project>
