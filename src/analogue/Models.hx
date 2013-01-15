@@ -1,6 +1,4 @@
 package analogue;
-import hsl.haxe.DirectSignaler;
-import hsl.haxe.Signaler;
 
 class Models 
 {

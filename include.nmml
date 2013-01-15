@@ -3,7 +3,7 @@
 
 	<source path="src" />
 	
-	<haxelib name="hsl-1" />
 	<haxelib name="polygonal-ds" />
+	<haxelib name="msignal" />
 	
 </project>

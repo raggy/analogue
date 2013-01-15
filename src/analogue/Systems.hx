@@ -1,6 +1,6 @@
 package analogue;
-import hsl.haxe.DirectSignaler;
-import hsl.haxe.Signaler;
+
+import msignal.Signal;
 	
 /**
 * Systems manager
@@ -9,20 +9,20 @@ import hsl.haxe.Signaler;
 class Systems 
 {
 	private var systems:Hash<System>;
-	public var created(default, null):Signaler<System>;
-	public var removed(default, null):Signaler<System>;
+	public var created(default, null):Signal1<System>;
+	public var removed(default, null):Signal1<System>;
 	
 	public function new() 
 	{
 		systems = new Hash<System>();
-		created = new DirectSignaler(this);
-		removed = new DirectSignaler(this);
+		created = new Signal1();
+		removed = new Signal1();
 	}
 		
 	/**
 	 * Create a new system
 	 */
-	public function create(type:Class<System>):System
+	public function create<T:System>(type:Class<T>):T
 	{
 		var typeName:String = Type.getClassName(type);
 		
@@ -32,7 +32,7 @@ class Systems
 		}
 		else
 		{
-			var system:System = Type.createInstance(type, []);
+			var system:T = Type.createInstance(type, []);
 			
 			systems.set(typeName, system);
 			created.dispatch(system);
@@ -58,13 +58,13 @@ class Systems
 	/**
 	 * Remove a system
 	 */
-	public function remove(type:Class<System>):System
+	public function remove<T:System>(type:Class<T>):T
 	{
 		var typeName:String = Type.getClassName(type);
 		
 		if (systems.exists(typeName))
 		{
-			var system:System = systems.get(typeName);
+			var system:T = cast systems.get(typeName);
 			
 			systems.remove(typeName);
 			removed.dispatch(system);

@@ -1,22 +1,21 @@
 package analogue;
-import hsl.haxe.DirectSignaler;
-import hsl.haxe.Signaler;
 import de.polygonal.ds.Hashable;
 import de.polygonal.ds.HashKey;
+import msignal.Signal;
 
 class Entity implements Hashable
 {
-	public var added(default, null):Signaler<Dynamic>;
+	public var added(default, null):Signal2<Entity, Dynamic>;
 	public var components(default, null):Hash<Dynamic>;
 	public var key:Int;
-	public var removed(default, null):Signaler<Dynamic>;
+	public var removed(default, null):Signal2<Entity, Dynamic>;
 		
 	public function new()
 	{
-		added = new DirectSignaler<Dynamic>(this);
+		added = new Signal2();
 		components = new Hash<Dynamic>();
 		key = HashKey.next();
-		removed = new DirectSignaler<Dynamic>(this);
+		removed = new Signal2();
 	}
 	
 	/**
@@ -25,16 +24,7 @@ class Entity implements Hashable
 	 */
 	public inline function add(component:Dynamic):Void
 	{
-		var typeName = "";
-
-		switch (Type.typeof(component))
-		{
-			case ValueType.TClass(component):
-				typeName = Type.getClassName(component);
-			case ValueType.TEnum(component):
-				typeName = Type.getEnumName(component);
-			default:
-		}
+		var typeName = Type.getClassName(Type.getClass(component));
 
 		if (components.exists(typeName))
 		{
@@ -45,32 +35,33 @@ class Entity implements Hashable
 			components.set(typeName, component);
 		}
 			
-		added.dispatch(component);
+		added.dispatch(this, component);
 	}
 	
 	/**
 	 * Get whether Entity has component of type
 	 * @return true if Entity has component of type
 	 */
-	public inline function exists<T>(type:Class<T>):Bool
+	public inline function has(type:Dynamic):Bool
 	{
 		return components.exists(Type.getClassName(type));
 	}
 	
 	/**
 	 * Get component with type T
-	 * @return	Component of type T
+	 * @param   type    Type of component to get
+	 * @return	        Component of type T
 	 */
 	public inline function get<T>(type:Class<T>):T
 	{
-		var typeName:String = Type.getClassName(type);
+		var typeName = Type.getClassName(type);
 		if (components.exists(typeName))
 		{
 			return components.get(typeName);
 		}
 		else
 		{
-			throw "Entity does not have component of type" + typeName + ".";
+			throw "Entity does not have component of type " + typeName + ".";
 		}
 	}
 		
@@ -83,7 +74,7 @@ class Entity implements Hashable
 		var typeName:String = Type.getClassName(type);
 		if (components.exists(typeName))
 		{
-			removed.dispatch(components.get(typeName));
+			removed.dispatch(this, components.get(typeName));
 			components.remove(typeName);
 		}
 		else

@@ -1,31 +1,29 @@
 package analogue;
-import hsl.haxe.DirectSignaler;
-import hsl.haxe.Signal;
-import hsl.haxe.Signaler;
+import msignal.Signal;
 import de.polygonal.ds.DLL;
 import de.polygonal.ds.HashSet;
 
 class Entities 
 {
 	private var list:DLL<Entity>;
-	public var added(default, null):Signaler<Entity>;
-	public var changed(default, null):Signaler<Entity>;
-	public var removed(default, null):Signaler<Entity>;
+	public var added(default, null):Signal1<Entity>;
+	public var changed(default, null):Signal1<Entity>;
+	public var removed(default, null):Signal1<Entity>;
 	
 	public function new()
 	{
 		list = new DLL<Entity>();
 		
-		added = new DirectSignaler(this);
-		changed = new DirectSignaler(this);
-		removed = new DirectSignaler(this);
+		added = new Signal1();
+		changed = new Signal1();
+		removed = new Signal1();
 	}
 	
 	public function add(entity:Entity):Entity
 	{
 		list.append(entity);
-		entity.added.bindAdvanced(onEntityComponentsChanged);
-		entity.removed.bindAdvanced(onEntityComponentsChanged);
+		entity.added.add(onEntityComponentsChanged);
+		entity.removed.add(onEntityComponentsChanged);
 		
 		added.dispatch(entity);
 		
@@ -34,15 +32,15 @@ class Entities
 	
 	public function match(types:Array<Dynamic>):EntityList
 	{
-		return new MatcherImplementation(this, types);
+		return new Matcher(this, types);
 	}
 	
 	public function remove(entity:Entity):Entity
 	{
 		removed.dispatch(entity);
 		
-		entity.added.bindAdvanced(onEntityComponentsChanged);
-		entity.removed.bindAdvanced(onEntityComponentsChanged);
+		entity.added.remove(onEntityComponentsChanged);
+		entity.removed.remove(onEntityComponentsChanged);
 		list.remove(entity);
 		
 		return entity;
@@ -53,13 +51,13 @@ class Entities
 		return list.iterator();
 	}
 	
-	private function onEntityComponentsChanged(signal:Signal<Dynamic>):Void 
+	private function onEntityComponentsChanged(entity:Entity, component:Dynamic):Void 
 	{
-		changed.dispatch(cast signal.currentTarget);
+		changed.dispatch(entity);
 	}
 }
 
-private class MatcherImplementation extends HashSet<Entity>, implements EntityList
+private class Matcher extends HashSet<Entity>, implements EntityList
 {
 	
 	private var entities:Entities;
@@ -77,9 +75,9 @@ private class MatcherImplementation extends HashSet<Entity>, implements EntityLi
 			this.types.set(Type.getClassName(type), null);
 		}
 		
-		entities.added.bind(onEntityChanged);
-		entities.changed.bind(onEntityChanged);
-		entities.removed.bind(onEntityRemoved);
+		entities.added.addWithPriority(onEntityChanged, 100);
+		entities.changed.addWithPriority(onEntityChanged, 100);
+		entities.removed.addWithPriority(onEntityRemoved, -100);
 		
 		for (entity in entities)
 		{
@@ -91,9 +89,9 @@ private class MatcherImplementation extends HashSet<Entity>, implements EntityLi
 	{
 		super.free();
 		
-		entities.added.unbind(onEntityChanged);
-		entities.changed.unbind(onEntityChanged);
-		entities.removed.unbind(onEntityRemoved);
+		entities.added.remove(onEntityChanged);
+		entities.changed.remove(onEntityChanged);
+		entities.removed.remove(onEntityRemoved);
 	}
 	
 	private function onEntityChanged(entity:Entity):Void

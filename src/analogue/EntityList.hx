@@ -1,8 +1,8 @@
 package analogue;
 
-import de.polygonal.ds.Collection;
+import de.polygonal.ds.Set;
 
-interface EntityList implements Collection<Entity>
+interface EntityList implements Set<Entity>
 {
 	
 }

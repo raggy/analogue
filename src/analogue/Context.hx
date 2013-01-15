@@ -12,8 +12,8 @@ class Context
 		models = new Models();
 		systems = new Systems();
 		
-		systems.created.bind(onSystemCreated);
-		systems.removed.bind(onSystemRemoved);
+		systems.created.add(onSystemCreated);
+		systems.removed.add(onSystemRemoved);
 	}
 	
 	private function onSystemCreated(system:System):Void
