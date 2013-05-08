@@ -62,6 +62,9 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 	
 	private var entities:Entities;
 	private var types:Hash<Void>;
+	public var added(default, null):Signal1<Entity>;
+	public var changed(default, null):Signal1<Entity>;
+	public var removed(default, null):Signal1<Entity>;
 	
 	public function new(entities:Entities, types:Array<Dynamic>)
 	{
@@ -79,6 +82,10 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 		entities.changed.addWithPriority(onEntityChanged, 100);
 		entities.removed.addWithPriority(onEntityRemoved, -100);
 		
+		added = new Signal1();
+		changed = new Signal1();
+		removed = new Signal1();
+		
 		for (entity in entities)
 		{
 			onEntityChanged(entity);
@@ -92,26 +99,44 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 		entities.added.remove(onEntityChanged);
 		entities.changed.remove(onEntityChanged);
 		entities.removed.remove(onEntityRemoved);
+		
+		added.removeAll();
+		changed.removeAll();
+		removed.removeAll();
 	}
 	
-	private function onEntityChanged(entity:Entity):Void
+	private inline function onEntityChanged(entity:Entity):Void
 	{
 		if (matches(entity))
 		{
-			set(entity);
+			if (!has(entity))
+			{
+				set(entity);
+				
+				added.dispatch(entity);
+			}
+			else
+			{
+				changed.dispatch(entity);
+			}
 		}
 		else
 		{
-			remove(entity);
+			onEntityRemoved(entity);
 		}
 	}
 	
-	private function onEntityRemoved(entity:Entity):Void
+	private inline function onEntityRemoved(entity:Entity):Void
 	{
-		remove(entity);
+		if (has(entity))
+		{
+			remove(entity);
+			
+			removed.dispatch(entity);
+		}
 	}
 	
-	private inline function matches(entity:Entity):Bool
+	private function matches(entity:Entity):Bool
 	{
 		for (typeName in types.keys())
 		{
