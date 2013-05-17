@@ -1,4 +1,4 @@
 analogue
 ========
 
-Minimal, component-based game framework for Haxe 2
+Minimal, component-based game framework for Haxe 3

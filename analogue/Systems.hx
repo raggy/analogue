@@ -1,5 +1,6 @@
 package analogue;
 
+import haxe.ds.ObjectMap;
 import msignal.Signal;
 	
 /**
@@ -8,13 +9,13 @@ import msignal.Signal;
 */
 class Systems 
 {
-	private var systems:Hash<System>;
+	private var systems:ObjectMap<Class<Dynamic>, System>;
 	public var created(default, null):Signal1<System>;
 	public var removed(default, null):Signal1<System>;
 	
 	public function new() 
 	{
-		systems = new Hash<System>();
+		systems = new ObjectMap<Class<Dynamic>, System>();
 		created = new Signal1();
 		removed = new Signal1();
 	}
@@ -24,9 +25,7 @@ class Systems
 	 */
 	public function create<T:System>(type:Class<T>):T
 	{
-		var typeName:String = Type.getClassName(type);
-		
-		if (systems.exists(typeName))
+		if (systems.exists(type))
 		{
 			throw "System " + type + " already existed.";
 		}
@@ -34,7 +33,7 @@ class Systems
 		{
 			var system:T = Type.createInstance(type, []);
 			
-			systems.set(typeName, system);
+			systems.set(type, system);
 			created.dispatch(system);
 			
 			return system;
@@ -43,15 +42,15 @@ class Systems
 	
 	public function get<T:System>(type:Class<T>):T
 	{
-		var typeName:String = Type.getClassName(type);
-	
-		if (systems.exists(typeName))
+		if (systems.exists(type))
 		{
-			return cast systems.get(typeName);
+			return cast systems.get(type);
 		}
 		else
 		{
 			throw "System " + type + " does not exist.";
+			
+			return null;
 		}
 	}
 		
@@ -60,13 +59,11 @@ class Systems
 	 */
 	public function remove<T:System>(type:Class<T>):T
 	{
-		var typeName:String = Type.getClassName(type);
-		
-		if (systems.exists(typeName))
+		if (systems.exists(type))
 		{
-			var system:T = cast systems.get(typeName);
+			var system:T = cast systems.get(type);
 			
-			systems.remove(typeName);
+			systems.remove(type);
 			removed.dispatch(system);
 			
 			return system;

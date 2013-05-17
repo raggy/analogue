@@ -1,31 +1,31 @@
 package analogue;
 
+import haxe.ds.ObjectMap;
+
 class Models 
 {
-	private var models:Hash<Dynamic>;
+	private var models:ObjectMap<Class<Dynamic>, Dynamic>;
 	
 	public function new()
 	{
-		models = new Hash<Dynamic>();
+		models = new ObjectMap<Class<Dynamic>, Dynamic>();
 	}
 	
-	public function get<T>(type:Class<T>):T
+	public inline function get<T>(type:Class<T>):T
 	{
-		var typeName:String = Type.getClassName(type);
-		
-		if (!models.exists(typeName))
+		if (models.exists(type))
 		{
-			models.set(typeName, Type.createInstance(type, []));
+			return models.get(type);
 		}
-		
-		return models.get(typeName);
+		else
+		{
+			return set(type, Type.createInstance(type, []));
+		}
 	}
 	
-	public function set<T>(type:Class<T>, instance:T):T
+	public inline function set<T>(type:Class<T>, instance:T):T
 	{
-		var typeName:String = Type.getClassName(type);
-		
-		models.set(typeName, instance);
+		models.set(type, instance);
 
 		return instance;
 	}
@@ -35,7 +35,7 @@ class Models
 		return models.iterator();
 	}
 	
-	public function types():Iterator<String>
+	public function types():Iterator<Class<Dynamic>>
 	{
 		return models.keys();
 	}

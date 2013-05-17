@@ -31,7 +31,7 @@ class Entities
 		return entity;
 	}
 	
-	public function match(types:Array<Dynamic>):EntityList
+	public function match(types:Array<Class<Dynamic>>):EntityList
 	{
 		return new Matcher(this, types);
 	}
@@ -58,25 +58,25 @@ class Entities
 	}
 }
 
-private class Matcher extends HashSet<Entity>, implements EntityList
+private class Matcher extends HashSet<Entity> implements EntityList
 {
 	
 	private var entities:Entities;
-	private var types:SLL<String>;
+	private var types:SLL<Class<Dynamic>>;
 	public var added(default, null):Signal1<Entity>;
 	public var changed(default, null):Signal1<Entity>;
 	public var removed(default, null):Signal1<Entity>;
 	
-	public function new(entities:Entities, types:Array<Dynamic>)
+	public function new(entities:Entities, types:Array<Class<Dynamic>>)
 	{
-		super(8);
+		super(64, 256);
 		
 		this.entities = entities;
-		this.types = new SLL<String>(types.length, types.length);
+		this.types = new SLL<Class<Dynamic>>(types.length, types.length);
 		
 		for (type in types)
 		{
-			this.types.append(Type.getClassName(type));
+			this.types.append(type);
 		}
 		
 		entities.added.addWithPriority(onEntityChanged, 100);
@@ -143,7 +143,7 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 		
 		while (node != null)
 		{
-			if (!entity.components.exists(node.val))
+			if (!entity.has(node.val))
 			{
 				return false;
 			}

@@ -1,19 +1,20 @@
 package analogue;
 import de.polygonal.ds.Hashable;
 import de.polygonal.ds.HashKey;
+import haxe.ds.ObjectMap;
 import msignal.Signal;
 
 class Entity implements Hashable
 {
 	public var added(default, null):Signal2<Entity, Dynamic>;
-	public var components(default, null):Hash<Dynamic>;
+	public var components(default, null):ObjectMap<Class<Dynamic>, Dynamic>;
 	public var key:Int;
 	public var removed(default, null):Signal2<Entity, Dynamic>;
 		
 	public function new()
 	{
 		added = new Signal2();
-		components = new Hash<Dynamic>();
+		components = new ObjectMap<Class<Dynamic>, Dynamic>();
 		key = HashKey.next();
 		removed = new Signal2();
 	}
@@ -24,15 +25,15 @@ class Entity implements Hashable
 	 */
 	public inline function add(component:Dynamic):Void
 	{
-		var typeName = Type.getClassName(Type.getClass(component));
+		var type = Type.getClass(component);
 
-		if (components.exists(typeName))
+		if (has(type))
 		{
-			throw "Component of type " + typeName + " already exists within this Entity.";
+			throw "Component of type " + type + " already exists within this Entity.";
 		}
 		else
 		{
-			components.set(typeName, component);
+			components.set(type, component);
 		}
 			
 		added.dispatch(this, component);
@@ -42,9 +43,9 @@ class Entity implements Hashable
 	 * Get whether Entity has component of type
 	 * @return true if Entity has component of type
 	 */
-	public inline function has(type:Dynamic):Bool
+	public inline function has(type:Class<Dynamic>):Bool
 	{
-		return components.exists(Type.getClassName(type));
+		return components.exists(type);
 	}
 	
 	/**
@@ -54,14 +55,13 @@ class Entity implements Hashable
 	 */
 	public inline function get<T>(type:Class<T>):T
 	{
-		var typeName = Type.getClassName(type);
-		if (components.exists(typeName))
+		if (has(type))
 		{
-			return components.get(typeName);
+			return components.get(type);
 		}
 		else
 		{
-			throw "Entity does not have component of type " + typeName + ".";
+			throw "Entity does not have component of type " + type + ".";
 		}
 	}
 		
@@ -71,15 +71,14 @@ class Entity implements Hashable
 	 */
 	public inline function remove(type:Dynamic):Void 
 	{
-		var typeName:String = Type.getClassName(type);
-		if (components.exists(typeName))
+		if (has(type))
 		{
-			removed.dispatch(this, components.get(typeName));
-			components.remove(typeName);
+			removed.dispatch(this, components.get(type));
+			components.remove(type);
 		}
 		else
 		{
-			throw "Entity does not have component of type " + typeName + ".";
+			throw "Entity does not have component of type " + type + ".";
 		}
 	}
 	
