@@ -1,6 +1,7 @@
 package analogue;
 import msignal.Signal;
 import de.polygonal.ds.DLL;
+import de.polygonal.ds.SLL;
 import de.polygonal.ds.HashSet;
 
 class Entities 
@@ -61,7 +62,7 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 {
 	
 	private var entities:Entities;
-	private var types:Hash<Void>;
+	private var types:SLL<String>;
 	public var added(default, null):Signal1<Entity>;
 	public var changed(default, null):Signal1<Entity>;
 	public var removed(default, null):Signal1<Entity>;
@@ -71,11 +72,11 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 		super(8);
 		
 		this.entities = entities;
-		this.types = new Hash<Void>();
+		this.types = new SLL<String>(types.length, types.length);
 		
 		for (type in types)
 		{
-			this.types.set(Type.getClassName(type), null);
+			this.types.append(Type.getClassName(type));
 		}
 		
 		entities.added.addWithPriority(onEntityChanged, 100);
@@ -138,13 +139,18 @@ private class Matcher extends HashSet<Entity>, implements EntityList
 	
 	private function matches(entity:Entity):Bool
 	{
-		for (typeName in types.keys())
+		var node = types.head;
+		
+		while (node != null)
 		{
-			if (!entity.components.exists(typeName))
+			if (!entity.components.exists(node.val))
 			{
 				return false;
 			}
+			
+			node = node.next;
 		}
+		
 		return true;
 	}
 }
