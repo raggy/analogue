@@ -1,8 +1,0 @@
-<project name="analogue" url="https://github.com/raggy/analogue" license="MIT">
-	<user name="raggy"/>
-	<tag v="game"/>
-	<depends name="msignal"/>
-	<depends name="polygonal-ds"/>
-	<description>minimal, component-based game framework for Haxe 2</description>
-	<version name="0.03"></version>
-</project>

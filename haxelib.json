@@ -1,0 +1,11 @@
+{
+  "name": "analogue",
+  "url" : "git@github.com:raggy/analogue.git",
+  "license": "",
+  "tags": [],
+  "description": "",
+  "version": "0.0.0",
+  "releasenote": "Updated from git.",
+  "contributors": [],
+  "dependencies": {}
+}
