@@ -1,6 +1,5 @@
 package analogue;
 
-import haxe.ds.ObjectMap;
 import msignal.Signal;
 	
 /**
@@ -9,13 +8,13 @@ import msignal.Signal;
 */
 class Systems 
 {
-	private var systems:ObjectMap<Class<Dynamic>, System>;
+	private var systems:ClassMap<Class<Dynamic>, System>;
 	public var created(default, null):Signal1<System>;
 	public var removed(default, null):Signal1<System>;
 	
 	public function new() 
 	{
-		systems = new ObjectMap<Class<Dynamic>, System>();
+		systems = new ClassMap<Class<Dynamic>, System>();
 		created = new Signal1();
 		removed = new Signal1();
 	}

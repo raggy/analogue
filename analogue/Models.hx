@@ -1,14 +1,12 @@
 package analogue;
 
-import haxe.ds.ObjectMap;
-
 class Models 
 {
-	private var models:ObjectMap<Class<Dynamic>, Dynamic>;
+	private var models:ClassMap<Class<Dynamic>, Dynamic>;
 	
 	public function new()
 	{
-		models = new ObjectMap<Class<Dynamic>, Dynamic>();
+		models = new ClassMap<Class<Dynamic>, Dynamic>();
 	}
 	
 	public inline function get<T>(type:Class<T>):T

@@ -1,20 +1,19 @@
 package analogue;
 import de.polygonal.ds.Hashable;
 import de.polygonal.ds.HashKey;
-import haxe.ds.ObjectMap;
 import msignal.Signal;
 
 class Entity implements Hashable
 {
 	public var added(default, null):Signal2<Entity, Dynamic>;
-	public var components(default, null):ObjectMap<Class<Dynamic>, Dynamic>;
+	public var components(default, null):ClassMap<Class<Dynamic>, Dynamic>;
 	public var key:Int;
 	public var removed(default, null):Signal2<Entity, Dynamic>;
 		
 	public function new()
 	{
 		added = new Signal2();
-		components = new ObjectMap<Class<Dynamic>, Dynamic>();
+		components = new ClassMap<Class<Dynamic>, Dynamic>();
 		key = HashKey.next();
 		removed = new Signal2();
 	}
