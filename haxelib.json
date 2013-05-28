@@ -1,7 +1,7 @@
 {
   "name": "analogue",
   "url" : "git@github.com:raggy/analogue.git",
-  "license": "",
+  "license": "MIT",
   "tags": [],
   "description": "",
   "version": "0.0.0",
