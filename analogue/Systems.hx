@@ -1,24 +1,24 @@
 package analogue;
 
 import msignal.Signal;
-	
+
 /**
 * Systems manager
 * @author Benjamin Davis
 */
-class Systems 
+class Systems
 {
 	private var systems:ClassMap<Class<Dynamic>, System>;
 	public var created(default, null):Signal1<System>;
 	public var removed(default, null):Signal1<System>;
-	
-	public function new() 
+
+	public function new()
 	{
 		systems = new ClassMap<Class<Dynamic>, System>();
 		created = new Signal1();
 		removed = new Signal1();
 	}
-		
+
 	/**
 	 * Create a new system
 	 */
@@ -30,15 +30,15 @@ class Systems
 		}
 		else
 		{
-			var system:T = Type.createInstance(type, []);
-			
+			var system:T = Type.createEmptyInstance(type);
+
 			systems.set(type, system);
 			created.dispatch(system);
-			
+
 			return system;
 		}
 	}
-	
+
 	public function get<T:System>(type:Class<T>):T
 	{
 		if (systems.exists(type))
@@ -48,11 +48,11 @@ class Systems
 		else
 		{
 			throw "System " + type + " does not exist.";
-			
+
 			return null;
 		}
 	}
-		
+
 	/**
 	 * Remove a system
 	 */
@@ -61,10 +61,10 @@ class Systems
 		if (systems.exists(type))
 		{
 			var system:T = cast systems.get(type);
-			
+
 			systems.remove(type);
 			removed.dispatch(system);
-			
+
 			return system;
 		}
 		else
@@ -72,16 +72,16 @@ class Systems
 			throw "System " + type + " does not exist.";
 		}
 	}
-		
+
 	/**
 	 * Remove all systems
 	 */
 	public function destroy():Void
 	{
-		for (system in systems) 
+		for (system in systems)
 		{
 			remove(Type.getClass(system));
 		}
 	}
-		
+
 }
