@@ -1,23 +1,23 @@
 package analogue;
-import de.polygonal.ds.Hashable;
-import de.polygonal.ds.HashKey;
 import msignal.Signal;
 
-class Entity implements Hashable
+class Entity
 {
+	static var next:Int = 0;
+
 	public var added(default, null):Signal2<Entity, Dynamic>;
 	public var components(default, null):ClassMap<Class<Dynamic>, Dynamic>;
 	public var key:Int;
 	public var removed(default, null):Signal2<Entity, Dynamic>;
-		
+
 	public function new()
 	{
 		added = new Signal2();
 		components = new ClassMap<Class<Dynamic>, Dynamic>();
-		key = HashKey.next();
+		key = next++;
 		removed = new Signal2();
 	}
-	
+
 	/**
 	 * Add a component to this Entity
 	 * @param	component
@@ -34,10 +34,10 @@ class Entity implements Hashable
 		{
 			components.set(type, component);
 		}
-			
+
 		added.dispatch(this, component);
 	}
-	
+
 	/**
 	 * Get whether Entity has component of type
 	 * @return true if Entity has component of type
@@ -46,7 +46,7 @@ class Entity implements Hashable
 	{
 		return components.exists(type);
 	}
-	
+
 	/**
 	 * Get component with type T
 	 * @param   type    Type of component to get
@@ -63,12 +63,12 @@ class Entity implements Hashable
 			throw "Entity does not have component of type " + type + ".";
 		}
 	}
-		
+
 	/**
 	 * Remove a component from this Entity
 	 * @param	type
 	 */
-	public inline function remove(type:Dynamic):Void 
+	public inline function remove(type:Dynamic):Void
 	{
 		if (has(type))
 		{
@@ -80,7 +80,7 @@ class Entity implements Hashable
 			throw "Entity does not have component of type " + type + ".";
 		}
 	}
-	
+
 	/**
 	 * @private
 	 */
