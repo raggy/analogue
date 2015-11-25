@@ -3,14 +3,14 @@ import msignal.Signal;
 
 class Entities
 {
-	private var list:Array<Entity>;
+	private var all:Map<Int, Entity>;
 	public var added(default, null):Signal1<Entity>;
 	public var changed(default, null):Signal1<Entity>;
 	public var removed(default, null):Signal1<Entity>;
 
 	public function new()
 	{
-		list = new Array<Entity>();
+		all = new Map();
 
 		added = new Signal1();
 		changed = new Signal1();
@@ -19,7 +19,7 @@ class Entities
 
 	public function add(entity:Entity):Entity
 	{
-		list.push(entity);
+		all.set(entity.key, entity);
 		entity.added.add(onEntityComponentsChanged);
 		entity.removed.add(onEntityComponentsChanged);
 
@@ -39,14 +39,14 @@ class Entities
 
 		entity.added.remove(onEntityComponentsChanged);
 		entity.removed.remove(onEntityComponentsChanged);
-		list.remove(entity);
+		all.remove(entity.key);
 
 		return entity;
 	}
 
 	public function iterator():Iterator<Entity>
 	{
-		return list.iterator();
+		return all.iterator();
 	}
 
 	private function onEntityComponentsChanged(entity:Entity, component:Dynamic):Void
@@ -63,11 +63,13 @@ private class Matcher extends haxe.ds.IntMap<Entity> implements EntityList
 	public var added(default, null):Signal1<Entity>;
 	public var changed(default, null):Signal1<Entity>;
 	public var removed(default, null):Signal1<Entity>;
+	public var debug:Bool;
 
 	public function new(entities:Entities, types:Array<Class<Dynamic>>)
 	{
 		super();
 
+		this.debug = false;
 		this.entities = entities;
 		this.types = types;
 
@@ -81,12 +83,16 @@ private class Matcher extends haxe.ds.IntMap<Entity> implements EntityList
 
 		for (entity in entities)
 		{
-			onEntityChanged(entity);
+			if (matches(entity))
+			{
+				set(entity.key, entity);
+			}
 		}
 	}
 
 	public function free():Void
 	{
+		if (debug) trace('I\'m free!');
 		entities.added.remove(onEntityChanged);
 		entities.changed.remove(onEntityChanged);
 		entities.removed.remove(onEntityRemoved);
@@ -96,18 +102,20 @@ private class Matcher extends haxe.ds.IntMap<Entity> implements EntityList
 		removed.removeAll();
 	}
 
-	private inline function onEntityChanged(entity:Entity):Void
+	private function onEntityChanged(entity:Entity):Void
 	{
 		if (matches(entity))
 		{
 			if (!exists(entity.key))
 			{
+				if (debug) trace('$entity added');
 				set(entity.key, entity);
 
 				added.dispatch(entity);
 			}
 			else
 			{
+				if (debug) trace('$entity changed');
 				changed.dispatch(entity);
 			}
 		}
@@ -117,13 +125,23 @@ private class Matcher extends haxe.ds.IntMap<Entity> implements EntityList
 		}
 	}
 
-	private inline function onEntityRemoved(entity:Entity):Void
+	private function onEntityRemoved(entity:Entity):Void
 	{
 		if (exists(entity.key))
 		{
+			if (debug) trace('$entity removed so removing from list');
 			remove(entity.key);
 
 			removed.dispatch(entity);
+		}
+		else
+		{
+			var typeNames = new Array<String>();
+			for (type in types)
+			{
+				typeNames.push(Type.getClassName(type));
+			}
+			if (debug) trace('$entity removed, but didn\'t match $typeNames');
 		}
 	}
 

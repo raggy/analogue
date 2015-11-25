@@ -8,13 +8,13 @@ import msignal.Signal;
 */
 class Systems
 {
-	private var systems:ClassMap<Class<Dynamic>, System>;
+	private var systems:Map<String, System>;
 	public var created(default, null):Signal1<System>;
 	public var removed(default, null):Signal1<System>;
 
 	public function new()
 	{
-		systems = new ClassMap<Class<Dynamic>, System>();
+		systems = new Map();
 		created = new Signal1();
 		removed = new Signal1();
 	}
@@ -24,15 +24,17 @@ class Systems
 	 */
 	public function create<T:System>(type:Class<T>):T
 	{
-		if (systems.exists(type))
+		var typeName = Type.getClassName(type);
+
+		if (systems.exists(typeName))
 		{
-			throw "System " + type + " already existed.";
+			throw "System " + typeName + " already existed.";
 		}
 		else
 		{
 			var system:T = Type.createEmptyInstance(type);
 
-			systems.set(type, system);
+			systems.set(typeName, system);
 			created.dispatch(system);
 
 			return system;
@@ -41,13 +43,15 @@ class Systems
 
 	public function get<T:System>(type:Class<T>):T
 	{
-		if (systems.exists(type))
+		var typeName = Type.getClassName(type);
+
+		if (systems.exists(typeName))
 		{
-			return cast systems.get(type);
+			return cast systems.get(typeName);
 		}
 		else
 		{
-			throw "System " + type + " does not exist.";
+			throw "System " + typeName + " does not exist.";
 
 			return null;
 		}
@@ -58,18 +62,20 @@ class Systems
 	 */
 	public function remove<T:System>(type:Class<T>):T
 	{
-		if (systems.exists(type))
-		{
-			var system:T = cast systems.get(type);
+		var typeName = Type.getClassName(type);
 
-			systems.remove(type);
+		if (systems.exists(typeName))
+		{
+			var system:T = cast systems.get(typeName);
+
+			systems.remove(typeName);
 			removed.dispatch(system);
 
 			return system;
 		}
 		else
 		{
-			throw "System " + type + " does not exist.";
+			throw "System " + typeName + " does not exist.";
 		}
 	}
 

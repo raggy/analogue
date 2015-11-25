@@ -6,14 +6,14 @@ class Entity
 	static var next:Int = 0;
 
 	public var added(default, null):Signal2<Entity, Dynamic>;
-	public var components(default, null):ClassMap<Class<Dynamic>, Dynamic>;
+	public var components(default, null):Map<String, Dynamic>;
 	public var key:Int;
 	public var removed(default, null):Signal2<Entity, Dynamic>;
 
 	public function new()
 	{
 		added = new Signal2();
-		components = new ClassMap<Class<Dynamic>, Dynamic>();
+		components = new Map();
 		key = next++;
 		removed = new Signal2();
 	}
@@ -25,14 +25,15 @@ class Entity
 	public inline function add(component:Dynamic):Void
 	{
 		var type = Type.getClass(component);
+		var typeName = Type.getClassName(type);
 
-		if (has(type))
+		if (components.exists(typeName))
 		{
-			throw "Component of type " + type + " already exists within this Entity.";
+			throw 'Component of type $typeName already exists within $this';
 		}
 		else
 		{
-			components.set(type, component);
+			components.set(typeName, component);
 		}
 
 		added.dispatch(this, component);
@@ -44,7 +45,7 @@ class Entity
 	 */
 	public inline function has(type:Class<Dynamic>):Bool
 	{
-		return components.exists(type);
+		return components.exists(Type.getClassName(type));
 	}
 
 	/**
@@ -54,13 +55,15 @@ class Entity
 	 */
 	public inline function get<T>(type:Class<T>):T
 	{
-		if (has(type))
+		var typeName = Type.getClassName(type);
+
+		if (components.exists(typeName))
 		{
-			return components.get(type);
+			return components.get(typeName);
 		}
 		else
 		{
-			throw "Entity does not have component of type " + type + ".";
+			throw '$this does not have component of type $typeName';
 		}
 	}
 
@@ -68,16 +71,18 @@ class Entity
 	 * Remove a component from this Entity
 	 * @param	type
 	 */
-	public inline function remove(type:Dynamic):Void
+	public inline function remove(type:Class<Dynamic>):Void
 	{
-		if (has(type))
+		var typeName = Type.getClassName(type);
+
+		if (components.exists(typeName))
 		{
-			removed.dispatch(this, components.get(type));
-			components.remove(type);
+			components.remove(typeName);
+			removed.dispatch(this, components.get(typeName));
 		}
 		else
 		{
-			throw "Entity does not have component of type " + type + ".";
+			throw '$this does not have component of type $typeName';
 		}
 	}
 
@@ -86,7 +91,7 @@ class Entity
 	 */
 	public inline function toString():String
 	{
-		return "[Entity key=" + key + "]";
+		return '[Entity key=$key]';
 	}
 
 	/**

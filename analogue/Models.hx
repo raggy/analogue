@@ -2,19 +2,21 @@ package analogue;
 
 class Models
 {
-	private var models:ClassMap<Class<Dynamic>, Dynamic>;
+	private var models:Map<String, Dynamic>;
 
 	public function new()
 	{
-		models = new ClassMap<Class<Dynamic>, Dynamic>();
+		models = new Map();
 	}
 
 	public inline function get<T>(type:Class<T>):T
 	{
-		if (models.exists(type))
+		var typeName = Type.getClassName(type);
+
+		if (models.exists(typeName))
 		{
 			// trace('${Type.getClassName(type)} already exists');
-			return models.get(type);
+			return models.get(typeName);
 		}
 		else
 		{
@@ -25,7 +27,9 @@ class Models
 
 	public inline function set<T>(type:Class<T>, instance:T):T
 	{
-		models.set(type, instance);
+		var typeName = Type.getClassName(type);
+
+		models.set(typeName, instance);
 
 		return instance;
 	}
@@ -33,10 +37,5 @@ class Models
 	public function iterator():Iterator<Dynamic>
 	{
 		return models.iterator();
-	}
-
-	public function types():Iterator<Class<Dynamic>>
-	{
-		return models.keys();
 	}
 }
