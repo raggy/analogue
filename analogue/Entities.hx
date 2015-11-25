@@ -21,6 +21,7 @@ class Entities
 	{
 		all.set(entity.key, entity);
 		entity.added.add(onEntityComponentsChanged);
+		entity.changed.add(onEntityComponentsChanged);
 		entity.removed.add(onEntityComponentsChanged);
 
 		added.dispatch(entity);
@@ -38,6 +39,7 @@ class Entities
 		removed.dispatch(entity);
 
 		entity.added.remove(onEntityComponentsChanged);
+		entity.changed.remove(onEntityComponentsChanged);
 		entity.removed.remove(onEntityComponentsChanged);
 		all.remove(entity.key);
 

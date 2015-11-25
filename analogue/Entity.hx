@@ -6,6 +6,7 @@ class Entity
 	static var next:Int = 0;
 
 	public var added(default, null):Signal2<Entity, Dynamic>;
+	public var changed(default, null):Signal2<Entity, Dynamic>;
 	public var components(default, null):Map<String, Dynamic>;
 	public var key:Int;
 	public var removed(default, null):Signal2<Entity, Dynamic>;
@@ -13,6 +14,7 @@ class Entity
 	public function new()
 	{
 		added = new Signal2();
+		changed = new Signal2();
 		components = new Map();
 		key = next++;
 		removed = new Signal2();
@@ -65,6 +67,20 @@ class Entity
 		{
 			throw '$this does not have component of type $typeName';
 		}
+	}
+
+	/**
+	 * Add (or replace) a component on this Entity
+	 * @param	component
+	 */
+	public inline function set(component:Dynamic):Void
+	{
+		var type = Type.getClass(component);
+		var typeName = Type.getClassName(type);
+
+		components.set(typeName, component);
+
+		changed.dispatch(this, component);
 	}
 
 	/**
